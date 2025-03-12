@@ -3,17 +3,19 @@ package com.smartwash.backend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private Long id;
+    @GeneratedValue
+    private UUID id;
     private String name;
     private String email;
     private String password;
     private LocalDate createdAt;
+    private LocalDate updatedAt;
 
     public User() {}
     public User(String name, String email, String password, LocalDate createdAt) {
@@ -21,11 +23,12 @@ public class User {
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
+        this.updatedAt = LocalDate.now();
     }
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
     public String getName() {
@@ -51,5 +54,13 @@ public class User {
     }
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
