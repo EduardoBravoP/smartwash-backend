@@ -27,6 +27,15 @@ public class User implements UserDetails {
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
+    public User(String name, String email, String password, UserRoles role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
+    }
+
     public User() {}
     public User(String name, String email, String password, LocalDate createdAt, UserRoles role) {
         this.name = name;
