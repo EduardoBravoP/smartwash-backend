@@ -5,6 +5,7 @@ import com.smartwash.backend.model.Services;
 import com.smartwash.backend.service.MachineService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,5 +53,12 @@ public class MachineController {
     @DeleteMapping("/{id}")
     public void deleteMachine(@PathVariable UUID id) {
         machineService.deleteMachine(id);
+    }
+
+    @PostMapping("/{id}/available-hours")
+    public List<String> getAvailableHours(@PathVariable UUID id, @RequestBody Map<String, String> updates) {
+        Machine existingMachine = machineService.getMachineById(id);
+
+        return machineService.getAvailableHours(id, UUID.fromString(updates.get("serviceId")), LocalDateTime.parse(updates.get("date")));
     }
 }

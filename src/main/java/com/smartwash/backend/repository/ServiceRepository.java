@@ -4,6 +4,7 @@ import com.smartwash.backend.model.Services;
 import com.smartwash.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
