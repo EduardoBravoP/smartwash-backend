@@ -50,21 +50,38 @@ public class MachineService {
     public List<String> getAvailableHours(UUID machineId, UUID serviceId, LocalDateTime date) {
         Optional<Services> service = serviceRepository.findById(serviceId);
 
-        if(service.isPresent()) {
+        if (service.isPresent()) {
             var serviceDuration = service.get().getDuration();
-
-            List<String> horarios = new ArrayList<>();
+            var scheduledOrders = orderRepository.findAllByStartTimeDate(date.toLocalDate());
+        
+            List<String> availableHours = new ArrayList<>();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
-            LocalTime horaInicio = LocalTime.parse("08:00", formatter);
-            LocalTime horaFim = LocalTime.parse("22:00", formatter);
+            LocalTime startTime = LocalTime.parse("08:00", formatter);
+            LocalTime endTime = LocalTime.parse("22:00", formatter);
 
-            while (!horaInicio.plusMinutes(serviceDuration).isAfter(horaFim)) {
-                horarios.add(horaInicio.format(formatter));
-                horaInicio = horaInicio.plusMinutes(serviceDuration);
+            while (!startTime.plusMinutes(serviceDuration).isAfter(endTime)) {
+                LocalDateTime proposedStartTime = date.with(startTime);
+                LocalDateTime proposedEndTime = proposedStartTime.plusMinutes(serviceDuration);
+            
+                boolean isTimeSlotAvailable = scheduledOrders.stream()
+                    .noneMatch(order -> {
+                        LocalDateTime orderStart = order.getStartTime().toLocalDateTime();
+                        LocalDateTime orderEnd = order.getEndTime().toLocalDateTime();
+                    
+                        // Check if the proposed time slot overlaps with any existing order
+                        return order.getMachine().getId().equals(machineId) && 
+                               !(proposedEndTime.isBefore(orderStart) || proposedStartTime.isAfter(orderEnd));
+                    });
+
+                if (isTimeSlotAvailable) {
+                    availableHours.add(startTime.format(formatter));
+                }
+            
+                startTime = startTime.plusMinutes(serviceDuration);
             }
 
-            return horarios;
+            return availableHours;
         }
 
         return null;
